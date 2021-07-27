@@ -8,7 +8,7 @@ urlpatterns=[
 ]
 
 
-app_name ='about'
+app_name ='rango/about'
 urlpatterns=[
     path('', views.about, name='about'),
 ]
