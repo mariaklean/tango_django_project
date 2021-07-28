@@ -1,4 +1,5 @@
 import os
+from typing import cast
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tango_with_django_project.settings')
 
 import django
@@ -9,7 +10,7 @@ def populate():
 
 	python_pages = [
 		{"title": "Official Python Tutorial",
-		"url":"http://docs.python.org/2/tutorial/"},
+		"url":"http://docs.python.org/3/tutorial/"},
 		{"title":"How to Think like a Computer Scientist",
 		"url":"http://www.greenteapress.com/thinkpython/"},
 		{"title":"Learn Python in 10 Minutes",
@@ -17,7 +18,7 @@ def populate():
 
 	django_pages = [
 		{"title":"Official Django Tutorial",
-		"url":"https://docs.djangoproject.com/en/1.9/intro/tutorial01/"},
+		"url":"https://docs.djangoproject.com/en/2.1/intro/tutorial01/"},
 		{"title":"Django Rocks",
 		"url":"http://www.djangorocks.com/"},
 		{"title":"How to Tango with Django",
@@ -35,7 +36,7 @@ def populate():
 
 
 	for cat, cat_data in cats.items():
-		c = add_cat(cat)
+		c = add_cat(cat, cat_data["views"], cat_data["likes"])
 		for p in cat_data["pages"]:
 			add_page(c, p["title"], p["url"])
 
@@ -51,8 +52,10 @@ def add_page(cat, title, url, views=0):
 	p.save()
 	return p
 
-def add_cat(name):
+def add_cat(name, likes=0, views=0):
 	c = Category.objects.get_or_create(name=name)[0]
+	c.likes = likes
+	c.views = views
 	c.save()
 	return c
 
