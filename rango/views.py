@@ -26,7 +26,7 @@ def index(request):
 def about(request):
    # return HttpResponse("Rango says here is the about page. <a href='http://127.0.0.1:8000/'>Index</a>")
     conext_dir={'boldmessage': ' Maria'}
-    return render(request, 'rango/about.html',context=conext_dir)
+    return render(request, 'rango/about.html',{})
 
 def show_category(request, category_name_slug):
     # Create a context dictionary which we can pass
