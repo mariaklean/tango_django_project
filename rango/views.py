@@ -28,26 +28,31 @@ def index(request):
 
     context_dict = {}
     context_dict['boldmessage'] = 'Crunchy, creamy, cookie, candy, cupcake!'
-    context_dict['visits'] = int(request.COOKIES.get('visits', '1'))
     context_dict = {'categories': category_list, 'pages': page_list}
+     # Call the helper function to handle the cookies
+    visitor_cookie_handler(request)
+    context_dict['visits'] = request.session['visits']
     # Render the response and send it back!
     response = render(request, 'rango/index.html', context=context_dict)
-    # Call the helper function to handle the cookies
-    visitor_cookie_handler(request, response)
+   
     return response
 
 def about(request):
    # return HttpResponse("Rango says here is the about page. <a href='http://127.0.0.1:8000/'>Index</a>")
-    conext_dir={'boldmessage': ' Maria'}
+    context_dict = {}
+    context_dict['boldmessage'] = ' Maria'
+    visitor_cookie_handler(request)
+    context_dict['visits'] = request.session['visits']
     if request.session.test_cookie_worked():
         print("TEST COOKIE WORKED!")
         request.session.delete_test_cookie()
-    return render(request, 'rango/about.html',{})
+    return render(request, 'rango/about.html', context=context_dict)
 
 def show_category(request, category_name_slug):
     # Create a context dictionary which we can pass
     # to the template rendering engine.
     context_dict = {}
+   
 
     try:
         # Can we find a category name slug with the given name?
@@ -244,7 +249,14 @@ def user_logout(request):
     # Take the user back to the homepage.
     return redirect(reverse('rango:index'))
 
-def visitor_cookie_handler(request, response):
+# A helper method
+def get_server_side_cookie(request, cookie, default_val=None):
+    val = request.session.get(cookie)
+    if not val:
+        val = default_val
+    return val
+
+def visitor_cookie_handler(request):
     visits = int(request.COOKIES.get('visits', '1'))
     print(visits)
     last_visit_cookie = request.COOKIES.get('last_visit', str(datetime.now()))
@@ -253,10 +265,10 @@ def visitor_cookie_handler(request, response):
     if (datetime.now() - last_visit_time).days > 0:
         visits = visits + 1
         # Update the last visit cookie now that we have updated the count
-        response.set_cookie('last_visit', str(datetime.now()))
+        request.session['last_visit'] = str(datetime.now())
     else:
         # Set the last visit cookie
-        response.set_cookie('last_visit', last_visit_cookie)
+        request.session['last_visit'] = last_visit_cookie
     # Update/set the visits cookie
-    response.set_cookie('visits', visits)
+    request.session['visits'] = visits
 
